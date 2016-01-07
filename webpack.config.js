@@ -7,7 +7,8 @@ var HtmlwebpackPlugin = require('html-webpack-plugin');
 var Clean = require('clean-webpack-plugin')
 var merge = require('webpack-merge');
 var pkg = require('./package.json');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var stylelint = require('stylelint');
 
 var TARGET = process.env.npm_lifecycle_event;
 process.env.BABEL_ENV = process.env.npm_lifecycle_event;
@@ -27,6 +28,18 @@ var common = {
         filename: 'bundle.js'
     },
     module: {
+        preLoaders: [
+            {
+                test: /\.css$/,
+                loaders: ['postcss'],
+                include: APP_PATH
+            },
+            {
+                test: /\.jsx?$/,
+                loaders: ['eslint'],
+                include: APP_PATH
+            }
+        ],
         loaders: [
             {
                 test: /\.jsx?$/,
@@ -34,6 +47,13 @@ var common = {
                 include: APP_PATH
             }
         ]
+    },
+    postcss: function () {
+        return [stylelint({
+            rules: {
+                'color-hex-case': 'lower'
+            }
+        })];
     },
     plugins: [
         new HtmlwebpackPlugin({
