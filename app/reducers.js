@@ -69,15 +69,16 @@ function lanes(state = [], action) {
                 return lane;
             });
         }
-            case laneActions.DETACH_FROM_LANE: {
-                return state.map((lane) => {
-                    if(lane.id === action.laneId
-                        && lane.notes.indexOf(action.noteId) > -1){
-                        lane.notes = lane.notes.filter((note) => note !== action.noteId);
-                    }
-                    return lane;
-                });
-            }
+        case laneActions.DETACH_FROM_LANE:
+        {
+            return state.map((lane) => {
+                if (lane.id === action.laneId
+                    && lane.notes.indexOf(action.noteId) > -1) {
+                    lane.notes = lane.notes.filter((note) => note !== action.noteId);
+                }
+                return lane;
+            });
+        }
         case laneActions.MOVE:
             const sourceId = action.sourceId;
             const targetId = action.targetId;
