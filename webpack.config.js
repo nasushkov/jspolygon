@@ -43,8 +43,11 @@ var common = {
         loaders: [
             {
                 test: /\.jsx?$/,
-                loaders: ['babel'],
-                include: APP_PATH
+                loader: "babel-loader",
+                include: APP_PATH,
+                query: {
+                    "presets": ["es2015", "react", "stage-0", "stage-1", "stage-2", "stage-3"]
+                }
             }
         ]
     },

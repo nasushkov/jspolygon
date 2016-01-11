@@ -5,7 +5,7 @@ import App from './app'
 import storage from '../libs/storage';
 
 const APP_STORAGE = 'app';
-const store = configureStore({});
+const store = configureStore(storage.get(APP_STORAGE) || {});
 store.subscribe(() => {
     if(!storage.get('debug')) {
         storage.set(APP_STORAGE, store.getState());
