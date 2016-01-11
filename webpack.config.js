@@ -47,8 +47,7 @@ var common = {
                 include: APP_PATH,
                 query: {
                     cacheDirectory: true,
-                    plugins: ['transform-decorators-legacy' ],
-                    presets: ["es2015", "react", "stage-0"]
+                    plugins: ['transform-decorators-legacy' ]
                 }
             }
         ]
