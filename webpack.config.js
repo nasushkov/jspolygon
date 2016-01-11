@@ -46,7 +46,9 @@ var common = {
                 loader: "babel-loader",
                 include: APP_PATH,
                 query: {
-                    "presets": ["es2015", "react", "stage-0", "stage-1", "stage-2", "stage-3"]
+                    cacheDirectory: true,
+                    plugins: ['transform-decorators-legacy' ],
+                    presets: ["es2015", "react", "stage-0"]
                 }
             }
         ]
