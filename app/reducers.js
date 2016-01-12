@@ -3,25 +3,22 @@ import update from 'react/lib/update';
 import * as laneActions from './actions/laneActions';
 import * as noteActions from './actions/noteActions';
 import undoable, { distinctState } from 'redux-undo'
+import { List, Map } from 'immutable';
 
-function notes(state = [], action) {
+function notes(state = new List(), action) {
     switch (action.type) {
         case noteActions.CREATE_NOTE:
         {
-            return [...state, action.note ];
+            return state.push(new Map(action.note));
         }
         case noteActions.UPDATE_NOTE:
         {
-            return state.map(note => {
-                if (note.id === action.id) {
-                    return {...note, task: action.task};
-                }
-                return note;
-            });
+            return state.update(state.findIndex(note => note.get('id') === action.id)
+                , note => note.set('task', action.task));
         }
         case noteActions.DELETE_NOTE:
         {
-            return state.filter(note => note.id !== action.id);
+            return state.delete(state.findIndex(note => note.get('id') === action.id));
         }
         default:
         {
@@ -30,24 +27,20 @@ function notes(state = [], action) {
     }
 }
 
-function lanes(state = [], action) {
+function lanes(state = new List(), action) {
     switch (action.type) {
         case laneActions.CREATE_LANE:
         {
-            return [...state, action.lane]
+            return state.push(new Map(action.lane));
         }
         case laneActions.UPDATE_LANE:
         {
-            return state.map(lane => {
-                if (lane.id === action.id) {
-                    return {...lane, name: action.name};
-                }
-                return lane;
-            });
+            return state.update(state.findIndex(lane => lane.get('id') === action.id)
+                , lane => lane.set('name', action.name));
         }
         case laneActions.DELETE_LANE:
         {
-            return state.filter(lane => lane.id !== action.id);
+            return state.delete(state.findIndex(lane => lane.get('id') === action.id));
         }
         case laneActions.ATTACH_TO_LANE:
         {
