@@ -44,32 +44,19 @@ function lanes(state = new List(), action) {
         }
         case laneActions.ATTACH_TO_LANE:
         {
-            return state.map((lane) => {
-                let index = lane.notes.indexOf(action.noteId);
+            return state.updateIn(['notes'], notes => {
+                let index = notes.indexOf(action.noteId);
                 if (index >= 0) {
-                    lane.notes = lane.notes.slice(0, index).concat(
-                        lane.notes.slice(index + 1)
-                    );
+                    return notes.delete(index);
                 }
-                return lane;
-            }).map(lane => {
-                if (lane.id === action.laneId
-                    && lane.notes.indexOf(action.noteId) === -1) {
-                    return Object.assign({}, lane, {
-                        notes: lane.notes.concat(action.noteId)
-                    });
-                }
-                return lane;
+            }).update(state.findIndex(lane => lane.get('id') === action.laneId), lane => {
+                return lane.updateIn(['notes'], notes => notes.push(action.noteId));
             });
         }
         case laneActions.DETACH_FROM_LANE:
         {
-            return state.map((lane) => {
-                if (lane.id === action.laneId
-                    && lane.notes.indexOf(action.noteId) > -1) {
-                    lane.notes = lane.notes.filter((note) => note !== action.noteId);
-                }
-                return lane;
+            return state.update(state.findIndex(lane => lane.get('id') === action.laneId), lane => {
+                return lane.update(['notes'], notes => notes.delete(action.noteId));
             });
         }
         case laneActions.MOVE:
@@ -77,14 +64,14 @@ function lanes(state = new List(), action) {
             const targetId = action.targetId;
 
             const lanes = state;
-            const sourceLane = lanes.filter((lane) => {
-                return lane.notes.indexOf(sourceId) >= 0;
+            const sourceLane = lanes.find((lane) => {
+                return lane.get('notes').indexOf(sourceId) >= 0;
             })[0];
-            const targetLane = lanes.filter((lane) => {
-                return lane.notes.indexOf(targetId) >= 0;
+            const targetLane = lanes.find((lane) => {
+                return lane.get('notes').indexOf(targetId) >= 0;
             })[0];
-            const sourceNoteIndex = sourceLane.notes.indexOf(sourceId);
-            const targetNoteIndex = targetLane.notes.indexOf(targetId);
+            const sourceNoteIndex = sourceLane.get('notes').indexOf(sourceId);
+            const targetNoteIndex = targetLane.get('notes').indexOf(targetId);
 
             if (sourceLane === targetLane) {
                 return state.map((lane) => {
@@ -100,10 +87,10 @@ function lanes(state = new List(), action) {
             }
             else {
                 // get rid of the source
-                sourceLane.notes = sourceLane.notes.slice(0, sourceNoteIndex).concat(sourceLane.notes.slice(sourceNoteIndex + 1));
+                sourceLane.updateIn(['notes'], notes => notes.delete(sourceNoteIndex));
 
                 // and move it to target
-                targetLane.notes = targetLane.notes.slice(0, targetNoteIndex).concat(sourceId).concat(targetLane.notes.slice(targetNoteIndex));
+                targetLane.updateIn(['notes'], notes => notes.push(sourceId));
             }
 
             return state;
