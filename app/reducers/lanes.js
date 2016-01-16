@@ -29,11 +29,12 @@ export default createReducer([], {
 
     [ACTIONS.DETACH_FROM_LANE]: (state, action) => {
         return state.update(state.findIndex(lane => lane.get('id') === action.laneId), lane => {
-            return lane.update(['notes'], notes => notes.delete(action.noteId));
+            return lane.updateIn(['notes'], notes => notes.delete(action.noteId));
         });
     },
 
     [ACTIONS.MOVE]: (state, action) => {
+
         const sourceId = action.sourceId;
         const targetId = action.targetId;
 
@@ -48,6 +49,11 @@ export default createReducer([], {
         const targetNoteIndex = targetLane.get('notes').indexOf(targetId);
 
         if (sourceLane === targetLane) {
+            return state.update(state.indexOf(sourceLane), lane => {
+                return lane.updateIn(['notes'], notes => {
+                   return notes.delete(sourceNoteIndex).
+                });
+            })
             return state.map((lane) => {
                 return lane.id === sourceLane.id ? Object.assign({}, lane, {
                     notes: update(sourceLane.notes, {
