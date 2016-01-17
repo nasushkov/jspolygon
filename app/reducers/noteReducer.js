@@ -1,5 +1,5 @@
 import { createReducer } from 'redux-immutablejs'
-import * as ACTIONS from './actions/noteActions';
+import * as ACTIONS from '../actions/noteActions';
 
 export default createReducer([], {
     [ACTIONS.CREATE_NOTE]: (state, action) => {

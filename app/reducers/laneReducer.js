@@ -1,5 +1,5 @@
 import { createReducer } from 'redux-immutablejs'
-import * as ACTIONS from './actions/laneActions';
+import * as ACTIONS from '../actions/laneActions';
 import { List } from 'immutable';
 
 export default createReducer([], {
@@ -39,40 +39,34 @@ export default createReducer([], {
         const targetId = action.targetId;
 
         const lanes = state;
-        const sourceLane = lanes.find((lane) => {
+        const sourceLaneIndex = lanes.findIndex((lane) => {
             return lane.get('notes').indexOf(sourceId) >= 0;
         })[0];
-        const targetLane = lanes.find((lane) => {
+        const sourceLane = lanes.get(sourceLaneIndex);
+        const targetLaneIndex = lanes.findIndex((lane) => {
             return lane.get('notes').indexOf(targetId) >= 0;
         })[0];
+        const targetLane = lanes.get(targetLaneIndex);
         const sourceNoteIndex = sourceLane.get('notes').indexOf(sourceId);
         const targetNoteIndex = targetLane.get('notes').indexOf(targetId);
 
         if (sourceLane === targetLane) {
+            if (sourceNoteIndex === targetNoteIndex) {
+                return state;
+            }
             return state.update(state.indexOf(sourceLane), lane => {
                 return lane.updateIn(['notes'], notes => {
-                   return notes.delete(sourceNoteIndex).
+                    const delResult = notes.delete(sourceNoteIndex);
+                    return delResult.take(targetNoteIndex)
+                        .push(action.sourceId)
+                        .concat(delResult.skip(targetNoteIndex));
                 });
-            })
-            return state.map((lane) => {
-                return lane.id === sourceLane.id ? Object.assign({}, lane, {
-                    notes: update(sourceLane.notes, {
-                        $splice: [
-                            [sourceNoteIndex, 1],
-                            [targetNoteIndex, 0, sourceId]
-                        ]
-                    })
-                }) : lane;
             });
         }
-        else {
-            // get rid of the source
-            sourceLane.updateIn(['notes'], notes => notes.delete(sourceNoteIndex));
-
-            // and move it to target
-            targetLane.updateIn(['notes'], notes => notes.push(sourceId));
-        }
-
-        return state;
+        return state.update(sourceLaneIndex, lane => {
+            return lane.updateIn(['notes'], notes => notes.delete(sourceNoteIndex));
+        }).update(targetLaneIndex, lane => {
+            lane.updateIn(['notes'], notes => notes.push(sourceId));
+        });
     }
 });
