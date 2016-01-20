@@ -1,9 +1,10 @@
 import { createReducer } from 'redux-immutablejs'
 import * as ACTIONS from '../actions/noteActions';
+import { List, Map, fromJS } from 'immutable';
 
 export default createReducer([], {
     [ACTIONS.CREATE_NOTE]: (state, action) => {
-        return state.push(new Map(action.note));
+        return state.push(fromJS(action.note));
     },
 
     [ACTIONS.UPDATE_NOTE]: (state, action) => {

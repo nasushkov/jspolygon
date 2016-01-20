@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux-immutablejs';
 import undoable, { distinctState } from 'redux-undo';
-import laneReducer from './laneReducer';
-import noteReducer from './noteReducer';
+import lanes from './laneReducer';
+import notes from './noteReducer';
 
-export default undoable(combineReducers({ laneReducer, noteReducer }, { filter: distinctState() }))
+export default undoable(combineReducers({ lanes, notes }, { filter: distinctState() }))
