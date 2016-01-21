@@ -14,6 +14,5 @@ export default function configureStore(initialState) {
     //        store.replaceReducer(nextReducer);
     //    });
     //}
-    console.log(store.getState());
     return store;
 }
