@@ -22,7 +22,7 @@ class App extends React.Component {
 }
 
 export default connect((state) => ({
-    lanes: state.present.toJS().lanes,
+    lanes: state.present.lanes,
     undoDisabled: state.past.length === 0,
     redoDisabled: state.future.length === 0
 }), {

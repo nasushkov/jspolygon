@@ -1,6 +1,5 @@
 import { createStore, applyMiddleware } from 'redux';
 import createLogger from 'redux-logger';
-import { combineReducers } from 'redux-immutablejs';
 import rootReducer from './reducers/rootReducer';
 
 const loggerMiddleware = createLogger();

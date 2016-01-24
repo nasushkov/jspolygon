@@ -61,7 +61,9 @@
     "redux-immutablejs": "0.0.8",
     "redux-logger": "^2.3.1",
     "redux-undo": "^0.6.0",
+    "seamless-immutable": "^5.0.1",
     "transit-immutable-js": "^0.5.0",
-    "transit-js": "^0.8.846"
+    "transit-js": "^0.8.846",
+    "underscore": "^1.8.3"
   }
 }

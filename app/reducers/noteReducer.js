@@ -1,18 +1,22 @@
-import { createReducer } from 'redux-immutablejs'
+import createReducer from '../seamlessImmutableHelpers/createReducer';
 import * as ACTIONS from '../actions/noteActions';
-import { List, Map, fromJS } from 'immutable';
+import Immutable from 'seamless-immutable';
 
 export default createReducer([], {
     [ACTIONS.CREATE_NOTE]: (state, action) => {
-        return state.push(fromJS(action.note));
+        return state.concat(Immutable(action.note));
     },
 
     [ACTIONS.UPDATE_NOTE]: (state, action) => {
-        return state.update(state.findIndex(note => note.get('id') === action.id)
-            , note => note.set('task', action.task));
+        return state.map(note => {
+            if(note.id == action.id){
+                return note.set('task', action.task);
+            }
+            return note;
+        });
     },
 
     [ACTIONS.DELETE_NOTE]: (state, action) => {
-        return state.delete(state.findIndex(note => note.get('id') === action.id));
+        return state.filter(note => note.id !== action.id);
     }
 });

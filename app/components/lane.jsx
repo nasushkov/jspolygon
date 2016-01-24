@@ -81,7 +81,7 @@ class Lane extends React.Component {
 }
 
 export default connect((state) => ({
-    allNotes: state.present.get('notes').toJS()
+    allNotes: state.present.notes
 }), {
     ...laneActions,
     ...noteActions

@@ -1,73 +1,61 @@
-import { createReducer } from 'redux-immutablejs'
+import createReducer from '../seamlessImmutableHelpers/createReducer';
 import * as ACTIONS from '../actions/laneActions';
-import { List, Map, fromJS } from 'immutable';
+import Immutable from 'seamless-immutable';
 
 export default createReducer([], {
     [ACTIONS.CREATE_LANE]: (state, action) => {
-        return state.push(fromJS(action.lane))
+        return state.concat(Immutable(action.lane));
     },
 
     [ACTIONS.UPDATE_LANE]: (state, action) => {
-        return state.update(state.findIndex(lane => lane.get('id') === action.id)
-            , lane => lane.set('name', action.name));
-    },
-
-    [ACTIONS.DELETE_LANE]: (state, action) => {
-        return state.delete(state.findIndex(lane => lane.get('id') === action.id));
-    },
-
-    [ACTIONS.ATTACH_TO_LANE]: (state, action) => {
-        return state.updateIn(['notes'], new List(), notes => {
-            let index = notes.indexOf(action.noteId);
-            if (index >= 0) {
-                return notes.delete(index);
+        return state.map(lane => {
+            if(lane.id === action.id){
+                return lane.set('name', action.name);
             }
-            return notes;
-        }).update(state.findIndex(lane => lane.get('id') === action.laneId), lane => {
-            return lane.updateIn(['notes'], notes => notes.push(action.noteId));
+            return lane;
         });
     },
 
+    [ACTIONS.DELETE_LANE]: (state, action) => {
+        return state.filter(lane => lane.id !== action.id);
+    },
+
+    [ACTIONS.ATTACH_TO_LANE]: (state, action) => {
+        return state.map(lane => {
+            let index = lane.notes.indexOf(action.noteId);
+            if(index > -1){
+                return lane.set('notes', lane.notes.filter(note => note !== action.noteId));
+            }
+            if(lane.id == action.laneId){
+                return lane.set('notes', lane.notes.concat(action.noteId));
+            }
+            return lane;
+        })
+    },
+
     [ACTIONS.DETACH_FROM_LANE]: (state, action) => {
-        return state.update(state.findIndex(lane => lane.get('id') === action.laneId), lane => {
-            return lane.updateIn(['notes'], notes => notes.delete(action.noteId));
+        return state.map(lane => {
+            if (lane.id == action.laneId) {
+                return lane.set('notes', lane.notes.filter(note => note !== action.noteId));
+            }
+            return lane;
         });
     },
 
     [ACTIONS.MOVE]: (state, action) => {
-
         const sourceId = action.sourceId;
         const targetId = action.targetId;
 
-        const lanes = state;
-        const sourceLaneIndex = lanes.findIndex(lane => {
-            return lane.get('notes').indexOf(sourceId) >= 0;
-        });
-        const sourceLane = lanes.get(sourceLaneIndex);
-        const targetLaneIndex = lanes.findIndex((lane) => {
-            return lane.get('notes').indexOf(targetId) >= 0;
-        });
-        const targetLane = lanes.get(targetLaneIndex);
-        const sourceNoteIndex = sourceLane.get('notes').indexOf(sourceId);
-        const targetNoteIndex = targetLane.get('notes').indexOf(targetId);
-
-        if (sourceLane === targetLane) {
-            if (sourceNoteIndex === targetNoteIndex) {
-                return state;
+        return state.map(lane => {
+            if(lane.notes.indexOf(sourceId) > -1){
+                lane = lane.set('notes', lane.notes.filter(note => note !== sourceId));
             }
-            return state.update(state.indexOf(sourceLane), lane => {
-                return lane.updateIn(['notes'], new List(), notes => {
-                    const delResult = notes.delete(sourceNoteIndex);
-                    return delResult.take(targetNoteIndex)
-                        .push(action.sourceId)
-                        .concat(delResult.skip(targetNoteIndex));
-                });
-            });
-        }
-        return state.update(sourceLaneIndex, lane => {
-            return lane.updateIn(['notes'], new List(), notes => notes.delete(sourceNoteIndex));
-        }).update(targetLaneIndex, lane => {
-            return lane.updateIn(['notes'], new List(), notes => notes.push(sourceId));
+            if(lane.notes.indexOf(targetId) > -1){
+                let mutNotes = lane.notes.asMutable();
+                mutNotes.splice(lane.notes.indexOf(targetId), 0, sourceId);
+                lane = lane.set('notes', Immutable(mutNotes));
+            }
+            return lane;
         });
     }
 });
