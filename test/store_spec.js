@@ -1,4 +1,4 @@
-import {Map, fromJS} from 'immutable';
+import Immutable from 'seamless-immutable';
 import {expect} from 'chai';
 
 import configureStore from '../app/configureStore';
@@ -20,7 +20,7 @@ describe('store', () => {
     it('returns correct initial state', () => {
         const store = configureStore();
         const state = store.getState();
-        expect(state.present).to.equal(fromJS({lanes:[], notes:[]}));
+        expect(state.present).to.equal(Immutable({lanes:[], notes:[]}));
     });
 });
 

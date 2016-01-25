@@ -114,8 +114,8 @@ export default function combineReducers(reducers) {
             throw sanityError;
         }
 
-        var dirty = false;
-        var finalState = mapValues(finalReducers, (reducer, key) => {
+        let dirty = false;
+        const finalState = mapValues(finalReducers, (reducer, key) => {
             var oldState = state[key];
             var newState = reducer(oldState, action);
             dirty = dirty || (oldState !== newState)
@@ -126,7 +126,7 @@ export default function combineReducers(reducers) {
         });
 
         if (process.env.NODE_ENV !== 'production') {
-            var warningMessage = getUnexpectedStateKeyWarningMessage(state, finalState, action);
+            let warningMessage = getUnexpectedStateKeyWarningMessage(state, finalState, action);
             if (warningMessage) {
                 console.error(warningMessage);
             }
