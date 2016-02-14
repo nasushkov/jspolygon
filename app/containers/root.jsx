@@ -6,7 +6,7 @@ import App from './app'
 import storage from '../libs/storage';
 
 const APP_STORAGE = 'app';
-const store = configureStore(Immutable({ lanes: [] }));
+const store = configureStore({ lanes: [] });
 store.subscribe(() => {
     if(!storage.get('debug')) {
         storage.set(APP_STORAGE, store.getState().present);

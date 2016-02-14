@@ -19,7 +19,7 @@ process.env.BABEL_ENV = TARGET;
 
 
 var common = {
-    entry: APP_PATH,
+    entry: ['babel-polyfill', APP_PATH],
     resolve: {
         extensions: ['', '.js', '.jsx']
     },
@@ -49,6 +49,10 @@ var common = {
                     cacheDirectory: true,
                     plugins: ['transform-decorators-legacy' ]
                 }
+            },
+            {
+                test: /\.png|jpg|jpeg|gif|svg?$/,
+                loader: 'url-loader'
             }
         ]
     },
@@ -62,7 +66,11 @@ var common = {
     plugins: [
         new HtmlwebpackPlugin({
             title: 'Kanban app'
-        })]
+        }),
+        new webpack.ProvidePlugin({
+            'Promise': 'bluebird'
+        })
+    ]
 };
 
 if(TARGET === 'start' || !TARGET) {
